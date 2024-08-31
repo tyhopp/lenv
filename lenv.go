@@ -78,7 +78,7 @@ func Check(logger *log.Logger, source string, destinations []string) {
 
 		if err != nil {
 			if os.IsNotExist(err) {
-				logger.Printf("No symlinked or physical file found at %s", destination)
+				logger.Printf("no symlinked or physical file found at %s", destination)
 				continue
 			} else {
 				logger.Fatalf("failed to check %s", destination)
