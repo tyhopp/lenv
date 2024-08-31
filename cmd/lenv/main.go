@@ -1,15 +1,12 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/tyhopp/lenv"
 )
 
 func main() {
-	paths := lenv.ReadLenvFile()
-
-	for _, paths := range paths {
-		fmt.Println(paths)
-	}
+	logger := lenv.Logger()
+	source := lenv.GetEnvFilePath(logger)
+	destinations := lenv.ReadLenvFile(logger)
+	lenv.Check(logger, source, destinations)
 }
