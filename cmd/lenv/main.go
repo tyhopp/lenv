@@ -9,6 +9,17 @@ import (
 	"github.com/tyhopp/lenv"
 )
 
+// printUsage prints the usage instructions for the lenv command.
+func printUsage() {
+	fmt.Println("Usage: lenv [options] <subcommand>")
+	fmt.Println("Options:")
+	flag.PrintDefaults()
+	fmt.Println("Subcommands:")
+	fmt.Println("  check   - Check status of symlinks between source env file and destinations")
+	fmt.Println("  link    - Symlink source env file to destinations")
+	fmt.Println("  unlink  - Remove symlinks from destinations")
+}
+
 // getPaths retrieves the source path and destination paths based on the given environment.
 func getPaths(logger *log.Logger, env string) (string, []string) {
 	source, err := lenv.GetEnvFilePath(env)
@@ -22,17 +33,6 @@ func getPaths(logger *log.Logger, env string) (string, []string) {
 	}
 
 	return source, destinations
-}
-
-// printUsage prints the usage instructions for the lenv command.
-func printUsage() {
-	fmt.Println("Usage: lenv [options] <subcommand>")
-	fmt.Println("Options:")
-	flag.PrintDefaults()
-	fmt.Println("Subcommands:")
-	fmt.Println("  check   - Check the environment configuration")
-	fmt.Println("  link    - Link the environment configuration")
-	fmt.Println("  unlink  - Unlink the environment configuration")
 }
 
 func main() {
