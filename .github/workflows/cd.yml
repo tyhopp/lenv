@@ -18,19 +18,7 @@ jobs:
     - name: set-up-go
       uses: actions/setup-go@v5
 
-    - name: install-deps
-      run: make deps
-
-    - name: make-scripts-executable
-      run: chmod +x ./scripts/get_version.sh ./scripts/check_tag_exists.sh ./scripts/build.sh
-
-    - name: get-version
-      run: ./scripts/get_version.sh
-
-    - name: check-tag-exists
-      run: ./scripts/check_tag_exists.sh
-
-    - name: build-all
+    - name: build
       run: make
 
     - name: release
