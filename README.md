@@ -26,3 +26,4 @@ TBD
 
 - `go run ./cmd/lenv/main.go` to run the program
 - `go build ./cmd/lenv/main.go` to build the program
+- `go test -v` to run the tests
