@@ -18,7 +18,7 @@ To install and make executable the latest release from GitHub:
 ```sh
 curl -L \
   -o /usr/local/bin/lenv \
-  https://github.com/tyhopp/lenv/releases/latest/download/lenv-linux-amd64
+  https://github.com/tyhopp/lenv/releases/latest/download/lenv-linux
 chmod +x /usr/local/bin/lenv
 ```
 
