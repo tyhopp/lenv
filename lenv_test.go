@@ -218,3 +218,40 @@ func TestLink_PhysicalFileExists(t *testing.T) {
 		t.Error("expected an error when physical file exists at destination")
 	}
 }
+
+func TestUnlink(t *testing.T) {
+	t.Cleanup(clean)
+
+	source := ".env"
+	destinations := []string{"testdata/a/.env", "testdata/b/.env"}
+
+	tmpEnvFile, err := os.Create(source)
+	if err != nil {
+		t.Fatalf("failed to create temp .env file: %v", err)
+	}
+	defer os.Remove(tmpEnvFile.Name())
+
+	for _, dest := range destinations {
+		err := os.Symlink(source, dest)
+		if err != nil {
+			t.Fatalf("failed to create symlink: %v", err)
+		}
+		defer os.Remove(dest)
+	}
+
+	err = Unlink(destinations)
+	if err != nil {
+		t.Errorf("unexpected error: %v", err)
+	}
+}
+
+func TestUnlink_NoSymlink(t *testing.T) {
+	t.Cleanup(clean)
+
+	destinations := []string{"testdata/a/.env", "testdata/b/.env"}
+
+	err := Unlink(destinations)
+	if err != nil {
+		t.Errorf("unexpected error: %v", err)
+	}
+}
