@@ -1,4 +1,4 @@
-.PHONY: all setup deps build build-all get-version check-tag-exists
+.PHONY: all setup deps build build-all
 
 all: build-all
 
@@ -13,9 +13,3 @@ build: setup deps
 
 build-all: setup deps
 	sh ./scripts/build_all.sh
-
-get-version:
-	sh ./scripts/get-version.sh
-
-check-tag-exists: get-version
-	sh ./scripts/check-tag-exists.sh
