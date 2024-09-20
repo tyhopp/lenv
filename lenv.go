@@ -103,7 +103,7 @@ func Link(source string, destinations []string) error {
 		stats, err := os.Lstat(destination)
 		if err != nil {
 			if !os.IsNotExist(err) {
-				return fmt.Errorf("lenv: failed to check %s", destination)
+				return fmt.Errorf("lenv: failed to check %s before symlinking", destination)
 			}
 		}
 		if stats != nil {
@@ -125,6 +125,27 @@ func Link(source string, destinations []string) error {
 	return nil
 }
 
-func Unlink() {
-	fmt.Println("todo: implement unlink")
+func Unlink(destinations []string) error {
+	for _, destination := range destinations {
+		stats, err := os.Lstat(destination)
+		if err != nil {
+			if os.IsNotExist(err) {
+				fmt.Printf("lenv: no symlink found at %s, skipping\n", destination)
+				continue
+			}
+			return fmt.Errorf("lenv: failed to check %s before removing symlink", destination)
+		}
+
+		if stats.Mode().Type() != os.ModeSymlink {
+			fmt.Printf("lenv: no symlink found at %s, skipping\n", destination)
+			continue
+		}
+
+		err = os.Remove(destination)
+		if err != nil {
+			return fmt.Errorf("lenv: failed to remove symlink at %s", destination)
+		}
+		fmt.Printf("lenv: removed symlink at %s\n", destination)
+	}
+	return nil
 }
