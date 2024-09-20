@@ -1,48 +1,55 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"os"
 
 	"github.com/tyhopp/lenv"
 )
 
-func main() {
-	logger := log.New(os.Stdout, "", 0)
+// getPaths retrieves the source path and destination paths based on the given environment.
+func getPaths(logger *log.Logger, env string) (string, []string) {
+	source, err := lenv.GetEnvFilePath(env)
+	if err != nil {
+		logger.Fatal(err)
+	}
 
-	if len(os.Args) < 2 {
+	destinations, err := lenv.ReadLenvFile()
+	if err != nil {
+		logger.Fatal(err)
+	}
+
+	return source, destinations
+}
+
+func main() {
+	logger := log.New(os.Stderr, "", 0)
+
+	envPtr := flag.String("env", ".env", "name of the environment file")
+	flag.Parse()
+
+	if len(flag.Args()) < 1 {
 		logger.Fatal("lenv: missing subcommand, available: check, link, unlink")
 	}
 
-	getPaths := func() (string, []string) {
-		source, err := lenv.GetEnvFilePath()
-		if err != nil {
-			logger.Fatal(err)
-		}
+	subcommand := flag.Args()[0]
 
-		destinations, err := lenv.ReadLenvFile()
-		if err != nil {
-			logger.Fatal(err)
-		}
-
-		return source, destinations
-	}
-
-	switch os.Args[1] {
+	switch subcommand {
 	case "check":
-		source, destinations := getPaths()
+		source, destinations := getPaths(logger, *envPtr)
 		err := lenv.Check(source, destinations)
 		if err != nil {
 			logger.Fatal(err)
 		}
 	case "link":
-		source, destinations := getPaths()
+		source, destinations := getPaths(logger, *envPtr)
 		err := lenv.Link(source, destinations)
 		if err != nil {
 			logger.Fatal(err)
 		}
 	case "unlink":
-		_, destinations := getPaths()
+		_, destinations := getPaths(logger, *envPtr)
 		err := lenv.Unlink(destinations)
 		if err != nil {
 			logger.Fatal(err)

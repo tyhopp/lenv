@@ -7,20 +7,20 @@ import (
 	"path/filepath"
 )
 
-// GetEnvFilePath returns the absolute path to the '.env' file
+// GetEnvFilePath returns the absolute path to the env file
 // in the current directory.
-func GetEnvFilePath() (string, error) {
-	path, err := filepath.Abs(".env")
+func GetEnvFilePath(env string) (string, error) {
+	path, err := filepath.Abs(env)
 	if err != nil {
-		return "", fmt.Errorf("lenv: failed to get absolute path to .env file")
+		return "", fmt.Errorf("lenv: failed to get absolute path to %s file", env)
 	}
 
 	_, err = os.Stat(path)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return "", fmt.Errorf("lenv: failed to find .env file in current directory")
+			return "", fmt.Errorf("lenv: failed to find %s file in current directory", env)
 		} else {
-			return "", fmt.Errorf("lenv: failed to check .env file")
+			return "", fmt.Errorf("lenv: failed to check %s file", env)
 		}
 	}
 
@@ -64,7 +64,7 @@ func ReadLenvFile() ([]string, error) {
 }
 
 // Check investigates the current status of symlinks between the
-// source '.env' file and destinations.
+// source env file and destinations.
 func Check(source string, destinations []string) error {
 	for _, destination := range destinations {
 		stats, err := os.Lstat(destination)
@@ -101,7 +101,7 @@ func Check(source string, destinations []string) error {
 	return nil
 }
 
-// Link creates symlinks between the source '.env' file and the destinations.
+// Link creates symlinks between the source env file and the destinations.
 func Link(source string, destinations []string) error {
 	for _, destination := range destinations {
 		stats, err := os.Lstat(destination)
