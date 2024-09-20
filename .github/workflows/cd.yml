@@ -6,9 +6,8 @@ on:
       - main
 
 jobs:
-  cd:
+  setup:
     runs-on: ubuntu-latest
-
     steps:
     - name: checkout-code
       uses: actions/checkout@v4
@@ -19,69 +18,51 @@ jobs:
     - name: install-deps
       run: go get .
 
-    - name: build-linux
-      run: GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -trimpath -o lenv-linux ./cmd/lenv/main.go
-
-    - name: build-windows
-      run: GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -trimpath -o lenv-windows.exe ./cmd/lenv/main.go
-
-    - name: build-macos
-      run: GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w" -trimpath -o lenv-macos ./cmd/lenv/main.go
-
-    - name: get-version
+  build:
+    needs: setup
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [linux, windows]
+        arch: [amd64, arm64]
+    steps:
+    - name: build
       run: |
-        git fetch --tags
-        VERSION=$(git describe --tags `git rev-list --tags --max-count=1` || echo "none")
-        if [ "$VERSION" = "none" ]; then
-          echo "No tags found, exiting"
-          exit 1
-        fi
-        echo "VERSION=$VERSION" >> $GITHUB_ENV
+        GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} make build
 
-    - name: check-tag-exists
-      run: |
-        if git rev-parse "$VERSION" >/dev/null 2>&1; then
-          echo "Tag $VERSION already exists, exiting"
-          exit 1
-        fi
+  prepare:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: get-version
+        run: make get-version
+      - name: check-tag-exists
+        run: make check-tag-exists
+      - name: create-github-release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.VERSION }}
+          release_name: Release ${{ env.VERSION }}
+          draft: false
+          prerelease: false
 
-    - name: create-github-release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ env.VERSION }}
-        release_name: Release ${{ env.VERSION }}
-        draft: false
-        prerelease: false
-
-    - name: upload-linux-executable
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [linux, windows]
+        arch: [amd64, arm64]
+    steps:
+    - name: upload-executable
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./lenv-linux
-        asset_name: lenv-linux
-        asset_content_type: application/octet-stream
-
-    - name: upload-windows-executable
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./lenv-windows.exe
-        asset_name: lenv-windows.exe
-        asset_content_type: application/octet-stream
-
-    - name: upload-macos-executable
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./lenv-macos
-        asset_name: lenv-macos
+        asset_path: ./lenv-${{ matrix.os }}-${{ matrix.arch }}
+        asset_name: lenv-${{ matrix.os }}-${{ matrix.arch }}${{ matrix.os == 'windows' && '.exe' || '' }}
         asset_content_type: application/octet-stream

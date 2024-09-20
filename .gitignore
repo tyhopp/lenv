@@ -2,3 +2,7 @@
 .lenv
 main
 lenv
+lenv-linux-amd64
+lenv-linux-arm64
+lenv-windows-amd64.exe
+lenv-windows-arm64.exe
