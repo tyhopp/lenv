@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"os"
 
@@ -23,14 +24,31 @@ func getPaths(logger *log.Logger, env string) (string, []string) {
 	return source, destinations
 }
 
+// printUsage prints the usage instructions for the lenv command.
+func printUsage() {
+	fmt.Println("Usage: lenv [options] <subcommand>")
+	fmt.Println("Options:")
+	flag.PrintDefaults()
+	fmt.Println("Subcommands:")
+	fmt.Println("  check   - Check the environment configuration")
+	fmt.Println("  link    - Link the environment configuration")
+	fmt.Println("  unlink  - Unlink the environment configuration")
+}
+
 func main() {
 	logger := log.New(os.Stderr, "", 0)
 
 	envPtr := flag.String("env", ".env", "name of the environment file")
+	helpPtr := flag.Bool("help", false, "display help information")
 	flag.Parse()
 
+	if *helpPtr {
+		printUsage()
+		return
+	}
+
 	if len(flag.Args()) < 1 {
-		logger.Fatal("lenv: missing subcommand, available: check, link, unlink")
+		logger.Fatal("lenv: missing subcommand, use -help flag for usage instructions")
 	}
 
 	subcommand := flag.Args()[0]
@@ -55,6 +73,6 @@ func main() {
 			logger.Fatal(err)
 		}
 	default:
-		logger.Fatal("lenv: unknown subcommand, available: check, link, unlink")
+		logger.Fatal("lenv: unknown subcommand, use -help flag for usage instructions")
 	}
 }
