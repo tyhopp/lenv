@@ -6,8 +6,12 @@ on:
       - main
 
 jobs:
-  setup:
+  cd:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [linux, windows]
+        arch: [amd64, arm64]
     steps:
     - name: checkout-code
       uses: actions/checkout@v4
@@ -17,46 +21,27 @@ jobs:
 
     - name: install-deps
       run: make deps
-
-  build:
-    needs: setup
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        os: [linux, windows]
-        arch: [amd64, arm64]
-    steps:
     - name: build
       run: |
         GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} make build
 
-  prepare:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: get-version
-        run: make get-version
-      - name: check-tag-exists
-        run: make check-tag-exists
-      - name: create-github-release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ env.VERSION }}
-          release_name: Release ${{ env.VERSION }}
-          draft: false
-          prerelease: false
+    - name: get-version
+      run: make get-version
 
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        os: [linux, windows]
-        arch: [amd64, arm64]
-    steps:
+    - name: check-tag-exists
+      run: make check-tag-exists
+
+    - name: create-github-release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ env.VERSION }}
+        release_name: Release ${{ env.VERSION }}
+        draft: false
+        prerelease: false
+
     - name: upload-executable
       uses: actions/upload-release-asset@v1
       env:
