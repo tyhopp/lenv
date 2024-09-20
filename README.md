@@ -1,29 +1,35 @@
 # lenv
 
-Manage symlinks from a root .env file to multiple destinations.
+Manage symlinks from a root file to multiple destinations.
 
-Useful for monorepos that use a single .env file as a source of truth.
-
-Available as both an installable CLI application and Go library.
+Useful for monorepos that use a single `.env` file as a source of truth for many child projects.
 
 ## Installation
 
-### CLI application
-
 TBD
 
-### Go library
+## Usage
 
-TBD
+In the root of your project:
 
-## Development
+1. Create a `.env` (or other named) file you want to symlink
+2. Create a `.lenv` file with the destination locations to symlink to, such as:
 
-### Prerequisites
+```
+project/a/.env
+project/b/.env
+```
 
-- [go](https://go.dev/doc/install)
-
-### Usage
-
-- `go run ./cmd/lenv/main.go` to run the program
-- `go build ./cmd/lenv/main.go` to build the program
-- `go test -v` to run the tests
+3. Follow these usage instructions:
+```
+Usage: lenv [options] <subcommand>
+Options:
+  -env string
+        name of the environment file (default ".env")
+  -help
+        display help information
+Subcommands:
+  check   - Check status of symlinks between source env file and destinations
+  link    - Symlink source env file to destinations
+  unlink  - Remove symlinks from destinations
+```
