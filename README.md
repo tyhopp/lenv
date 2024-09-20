@@ -6,7 +6,23 @@ Useful for monorepos that use a single `.env` file as a source of truth for many
 
 ## Installation
 
-TBD
+### Via Go tooling
+
+- `go install github.com/tyhopp/lenv` to install the command line executable
+- `go get github.com/tyhopp/lenv` to install as a dependency in your Go project
+
+### Via precompiled binaries
+
+To install and make executable the latest release from GitHub:
+
+```sh
+curl -L \
+  -o /usr/local/bin/lenv \
+  https://github.com/tyhopp/lenv/releases/latest/download/lenv-linux-amd64
+chmod +x /usr/local/bin/lenv
+```
+
+See [Releases](https://github.com/tyhopp/lenv/releases) for all available binaries and versions.
 
 ## Usage
 
