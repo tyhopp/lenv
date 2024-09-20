@@ -28,11 +28,11 @@ jobs:
 
     - name: get-version
       working-directory: ${{ github.workspace }}
-      run: ./scripts/get-version.sh
+      run: ./scripts/get_version.sh
 
     - name: check-tag-exists
       working-directory: ${{ github.workspace }}
-      run: ./scripts/get-version.sh
+      run: ./scripts/check_tag_exists.sh
 
     - name: create-github-release
       id: create_release
