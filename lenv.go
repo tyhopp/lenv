@@ -97,8 +97,32 @@ func Check(source string, destinations []string) error {
 	return nil
 }
 
-func Link() {
-	fmt.Println("todo: implement link")
+// Link creates symlinks between the source '.env' file and the destinations.
+func Link(source string, destinations []string) error {
+	for _, destination := range destinations {
+		stats, err := os.Lstat(destination)
+		if err != nil {
+			if !os.IsNotExist(err) {
+				return fmt.Errorf("lenv: failed to check %s", destination)
+			}
+		}
+		if stats != nil {
+			if stats.Mode().Type() == os.ModeSymlink {
+				fmt.Printf("lenv: symlink already exists at %s, skipping\n", destination)
+				continue
+			}
+			if stats.Mode().IsRegular() {
+				return fmt.Errorf("lenv: physical file at %s should be removed first", destination)
+			}
+		}
+
+		err = os.Symlink(source, destination)
+		if err != nil {
+			return fmt.Errorf("lenv: failed to symlink %s to %s", source, destination)
+		}
+		fmt.Printf("lenv: symlinked %s to %s\n", source, destination)
+	}
+	return nil
 }
 
 func Unlink() {
