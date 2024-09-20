@@ -3,48 +3,41 @@ package lenv
 import (
 	"bufio"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 )
 
-// Logger returns a new logger that writes to stdout with the prefix "lenv: ".
-func Logger() *log.Logger {
-	lenvLog := log.New(os.Stdout, "lenv: ", 0)
-	return lenvLog
-}
-
 // GetEnvFilePath returns the absolute path to the '.env' file
 // in the current directory.
-func GetEnvFilePath(logger *log.Logger) string {
+func GetEnvFilePath() (string, error) {
 	path, err := filepath.Abs(".env")
 	if err != nil {
-		logger.Fatalf("failed to get absolute path to .env file")
+		return "", fmt.Errorf("lenv: failed to get absolute path to .env file")
 	}
 
 	_, err = os.Stat(path)
 	if err != nil {
 		if os.IsNotExist(err) {
-			logger.Fatalf("failed to find source .env file in current directory")
+			return "", fmt.Errorf("lenv: failed to find .env file in current directory")
 		} else {
-			logger.Fatalf("failed to check source .env file")
+			return "", fmt.Errorf("lenv: failed to check .env file")
 		}
 	}
 
-	return path
+	return path, nil
 }
 
 // ReadLenvFile reads a '.lenv' file in the current directory
 // and returns a slice of absolute destination paths.
 //
 // Destination paths are not guaranteed to exist or be valid.
-func ReadLenvFile(logger *log.Logger) []string {
+func ReadLenvFile() ([]string, error) {
 	file, err := os.Open(".lenv")
 	if err != nil {
 		if os.IsNotExist(err) {
-			logger.Fatalf("failed to find .lenv file in current directory")
+			return []string{}, fmt.Errorf("lenv: failed to find .lenv file in current directory")
 		} else {
-			logger.Fatalf("failed to read .lenv file in current directory")
+			return []string{}, fmt.Errorf("lenv: failed to check .lenv file in current directory")
 		}
 	}
 	defer file.Close()
@@ -55,33 +48,33 @@ func ReadLenvFile(logger *log.Logger) []string {
 		lines = append(lines, scanner.Text())
 	}
 	if err := scanner.Err(); err != nil {
-		logger.Fatalf("failed to scan .lenv file")
+		return []string{}, fmt.Errorf("lenv: failed to scan .lenv file")
 	}
 
 	var destinations []string
 	for _, line := range lines {
 		path, err := filepath.Abs(line)
 		if err != nil {
-			logger.Fatalf("failed to get absolute path to %s", line)
+			return []string{}, fmt.Errorf("lenv: failed to get absolute path to %s", line)
 		}
 		destinations = append(destinations, path)
 	}
 
-	return destinations
+	return destinations, nil
 }
 
 // Check investigates the current status of symlinks between the
 // source '.env' file and destinations.
-func Check(logger *log.Logger, source string, destinations []string) {
+func Check(source string, destinations []string) error {
 	for _, destination := range destinations {
 		stats, err := os.Lstat(destination)
 
 		if err != nil {
 			if os.IsNotExist(err) {
-				logger.Printf("no symlinked or physical file found at %s", destination)
+				fmt.Printf("lenv: no symlinked or physical file found at %s\n", destination)
 				continue
 			} else {
-				logger.Fatalf("failed to check %s", destination)
+				return fmt.Errorf("lenv: failed to check %s", destination)
 			}
 		}
 
@@ -91,14 +84,17 @@ func Check(logger *log.Logger, source string, destinations []string) {
 				panic(err)
 			}
 			if link == source {
-				logger.Printf("symlink links %s to %s", source, destination)
+				fmt.Printf("lenv: symlink links %s to %s\n", source, destination)
 			} else {
-				logger.Fatalf("symlink %s does not link to %s, it should be removed", destination, source)
+				return fmt.Errorf("lenv: symlink %s does not link to %s, it should be removed", destination, source)
 			}
-		} else {
-			logger.Fatalf("found physical file %s, it should be removed", destination)
+		}
+
+		if stats.Mode().IsRegular() {
+			return fmt.Errorf("lenv: found physical file %s, it should be removed", destination)
 		}
 	}
+	return nil
 }
 
 func Link() {
