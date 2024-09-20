@@ -32,7 +32,7 @@ func TestGetEnvFilePath(t *testing.T) {
 	}
 	defer os.Remove(tmpEnvFile.Name())
 
-	path, err := GetEnvFilePath()
+	path, err := GetEnvFilePath(".env")
 	fmt.Printf("path: %s\n", path)
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
@@ -50,7 +50,7 @@ func TestGetEnvFilePath_FileDoesNotExist(t *testing.T) {
 		t.Fatal(".env file should not exist before the test")
 	}
 
-	path, err := GetEnvFilePath()
+	path, err := GetEnvFilePath(".env")
 	if err == nil {
 		t.Error("expected an error when .env file does not exist")
 	}
