@@ -10,18 +10,22 @@ import (
 
 func TestMain(m *testing.M) {
 	code := m.Run()
-	teardown()
+	clean()
 	os.Exit(code)
 }
 
-func teardown() {
+func clean() {
 	os.Remove(".env")
 	os.Remove(".env2")
 	os.Remove(".lenv")
 	os.Remove("testdata/.env")
+	os.Remove("testdata/a/.env")
+	os.Remove("testdata/b/.env")
 }
 
 func TestGetEnvFilePath(t *testing.T) {
+	t.Cleanup(clean)
+
 	tmpEnvFile, err := os.Create(".env")
 	if err != nil {
 		t.Fatalf("failed to create temp .env file: %v", err)
@@ -39,6 +43,8 @@ func TestGetEnvFilePath(t *testing.T) {
 }
 
 func TestGetEnvFilePath_FileDoesNotExist(t *testing.T) {
+	t.Cleanup(clean)
+
 	_, err := os.Stat(".env")
 	if err == nil {
 		t.Fatal(".env file should not exist before the test")
@@ -54,6 +60,8 @@ func TestGetEnvFilePath_FileDoesNotExist(t *testing.T) {
 }
 
 func TestReadLenvFile(t *testing.T) {
+	t.Cleanup(clean)
+
 	tmpLenvFile, err := os.Create(".lenv")
 	if err != nil {
 		t.Fatalf("failed to create temp .lenv file: %v", err)
@@ -72,6 +80,8 @@ func TestReadLenvFile(t *testing.T) {
 }
 
 func TestReadLenvFile_FileDoesNotExist(t *testing.T) {
+	t.Cleanup(clean)
+
 	_, err := os.Stat(".lenv")
 	if err == nil {
 		t.Fatal(".lenv file should not exist before the test")
@@ -87,6 +97,8 @@ func TestReadLenvFile_FileDoesNotExist(t *testing.T) {
 }
 
 func TestCheck(t *testing.T) {
+	t.Cleanup(clean)
+
 	source := ".env"
 	destinations := []string{"a", "b"}
 
@@ -111,6 +123,8 @@ func TestCheck(t *testing.T) {
 }
 
 func TestCheck_SymlinkPointsToDifferentSource(t *testing.T) {
+	t.Cleanup(clean)
+
 	source := ".env"
 	destinations := []string{"testdata/.env"}
 
@@ -140,6 +154,8 @@ func TestCheck_SymlinkPointsToDifferentSource(t *testing.T) {
 }
 
 func TestCheck_PhysicalFileExists(t *testing.T) {
+	t.Cleanup(clean)
+
 	source := ".env"
 	destinations := []string{"testdata/.env"}
 
@@ -156,6 +172,48 @@ func TestCheck_PhysicalFileExists(t *testing.T) {
 	defer os.Remove(tmpDestFile.Name())
 
 	err = Check(source, destinations)
+	if err == nil {
+		t.Error("expected an error when physical file exists at destination")
+	}
+}
+
+func TestLink(t *testing.T) {
+	t.Cleanup(clean)
+
+	source := ".env"
+	destinations := []string{"testdata/a/.env", "testdata/b/.env"}
+
+	tmpEnvFile, err := os.Create(source)
+	if err != nil {
+		t.Fatalf("failed to create temp .env file: %v", err)
+	}
+	defer os.Remove(tmpEnvFile.Name())
+
+	err = Link(source, destinations)
+	if err != nil {
+		t.Errorf("unexpected error: %v", err)
+	}
+}
+
+func TestLink_PhysicalFileExists(t *testing.T) {
+	t.Cleanup(clean)
+
+	source := ".env"
+	destinations := []string{"testdata/a/.env", "testdata/b/.env"}
+
+	tmpEnvFile, err := os.Create(source)
+	if err != nil {
+		t.Fatalf("failed to create temp .env file: %v", err)
+	}
+	defer os.Remove(tmpEnvFile.Name())
+
+	tmpDestFile, err := os.Create(destinations[0])
+	if err != nil {
+		t.Fatalf("failed to create temp destination file: %v", err)
+	}
+	defer os.Remove(tmpDestFile.Name())
+
+	err = Link(source, destinations)
 	if err == nil {
 		t.Error("expected an error when physical file exists at destination")
 	}
