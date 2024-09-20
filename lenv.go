@@ -93,6 +93,10 @@ func Check(source string, destinations []string) error {
 		if stats.Mode().IsRegular() {
 			return fmt.Errorf("lenv: found physical file %s, it should be removed", destination)
 		}
+
+		if stats.Mode().IsDir() {
+			return fmt.Errorf("lenv: found directory %s, destination paths should be files", destination)
+		}
 	}
 	return nil
 }
@@ -125,6 +129,7 @@ func Link(source string, destinations []string) error {
 	return nil
 }
 
+// Unlink removes symlinks at the destinations.
 func Unlink(destinations []string) error {
 	for _, destination := range destinations {
 		stats, err := os.Lstat(destination)
