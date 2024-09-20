@@ -21,15 +21,18 @@ jobs:
 
     - name: install-deps
       run: make deps
+
     - name: build
-      run: |
-        GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} make build
+      working-directory: ${{ github.workspace }}
+      run: GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} make build
 
     - name: get-version
-      run: make get-version
+      working-directory: ${{ github.workspace }}
+      run: ./scripts/get-version.sh
 
     - name: check-tag-exists
-      run: make check-tag-exists
+      working-directory: ${{ github.workspace }}
+      run: ./scripts/get-version.sh
 
     - name: create-github-release
       id: create_release
