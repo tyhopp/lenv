@@ -30,6 +30,18 @@ func clean() {
 	}
 }
 
+func cleanupTempFile(f *os.File) error {
+	err := f.Close()
+	if err != nil {
+		return fmt.Errorf("failed to close temp file: %v", err)
+	}
+	err = os.Remove(f.Name())
+	if err != nil {
+		return fmt.Errorf("failed to remove temp file: %v", err)
+	}
+	return nil
+}
+
 func TestGetEnvFilePath(t *testing.T) {
 	t.Cleanup(clean)
 
@@ -37,7 +49,7 @@ func TestGetEnvFilePath(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create temp .env file: %v", err)
 	}
-	defer os.Remove(tmpEnvFile.Name())
+	defer cleanupTempFile(tmpEnvFile)
 
 	path, err := GetEnvFilePath(paths["env"])
 	fmt.Printf("path: %s\n", path)
@@ -75,7 +87,7 @@ func TestReadLenvFile(t *testing.T) {
 	}
 	expectedDestinations := []string{"a", "b"}
 	tmpLenvFile.WriteString(strings.Join(expectedDestinations, "\n"))
-	defer os.Remove(tmpLenvFile.Name())
+	defer cleanupTempFile(tmpLenvFile)
 
 	destinations, err := ReadLenvFile()
 	if err != nil {
@@ -113,7 +125,7 @@ func TestCheck(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create temp .env file: %v", err)
 	}
-	defer os.Remove(tmpEnvFile.Name())
+	defer cleanupTempFile(tmpEnvFile)
 
 	for _, dest := range destinations {
 		err := os.Symlink(source, dest)
@@ -139,14 +151,14 @@ func TestCheck_SymlinkPointsToDifferentSource(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create temp .env file: %v", err)
 	}
-	defer os.Remove(tmpEnvFile.Name())
+	defer cleanupTempFile(tmpEnvFile)
 
 	differentSource := paths["env2"]
 	tmpEnvFile2, err := os.Create(differentSource)
 	if err != nil {
 		t.Fatalf("failed to create temp .env2 file: %v", err)
 	}
-	defer os.Remove(tmpEnvFile2.Name())
+	defer cleanupTempFile(tmpEnvFile2)
 
 	err = os.Symlink(differentSource, destinations[0])
 	if err != nil {
@@ -170,13 +182,13 @@ func TestCheck_PhysicalFileExists(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create temp .env file: %v", err)
 	}
-	defer os.Remove(tmpEnvFile.Name())
+	defer cleanupTempFile(tmpEnvFile)
 
 	tmpDestFile, err := os.Create(destinations[0])
 	if err != nil {
 		t.Fatalf("failed to create temp destination file: %v", err)
 	}
-	defer os.Remove(tmpDestFile.Name())
+	defer cleanupTempFile(tmpDestFile)
 
 	err = Check(source, destinations)
 	if err == nil {
@@ -194,7 +206,7 @@ func TestLink(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create temp .env file: %v", err)
 	}
-	defer os.Remove(tmpEnvFile.Name())
+	defer cleanupTempFile(tmpEnvFile)
 
 	err = Link(source, destinations)
 	if err != nil {
@@ -212,13 +224,13 @@ func TestLink_PhysicalFileExists(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create temp .env file: %v", err)
 	}
-	defer os.Remove(tmpEnvFile.Name())
+	defer cleanupTempFile(tmpEnvFile)
 
 	tmpDestFile, err := os.Create(destinations[0])
 	if err != nil {
 		t.Fatalf("failed to create temp destination file: %v", err)
 	}
-	defer os.Remove(tmpDestFile.Name())
+	defer cleanupTempFile(tmpDestFile)
 
 	err = Link(source, destinations)
 	if err == nil {
@@ -236,7 +248,7 @@ func TestUnlink(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to create temp .env file: %v", err)
 	}
-	defer os.Remove(tmpEnvFile.Name())
+	defer cleanupTempFile(tmpEnvFile)
 
 	for _, dest := range destinations {
 		err := os.Symlink(source, dest)
