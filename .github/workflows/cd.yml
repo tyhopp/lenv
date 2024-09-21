@@ -50,5 +50,6 @@ jobs:
           lenv-freebsd-arm64
           lenv-openbsd-amd64
           lenv-openbsd-arm64
+          lenv-wasip1.wasm
           LICENSE
         body: ${{ env.changelog }}
