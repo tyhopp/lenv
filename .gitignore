@@ -6,3 +6,9 @@ lenv-linux-amd64
 lenv-linux-arm64
 lenv-windows-amd64.exe
 lenv-windows-arm64.exe
+lenv-darwin-amd64
+lenv-darwin-arm64
+lenv-freebsd-amd64
+lenv-freebsd-arm64
+lenv-openbsd-amd64
+lenv-openbsd-arm64
