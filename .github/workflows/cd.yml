@@ -17,6 +17,8 @@ jobs:
     steps:
     - name: checkout-code
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
     - name: set-up-go
       uses: actions/setup-go@v5
@@ -24,11 +26,18 @@ jobs:
     - name: build
       run: make
 
+    - name: generate-changelog
+      id: changelog
+      run: |
+        changelog=$(./changelog.sh)
+        echo "::set-output name=changelog::$changelog"
+
     - name: release
       uses: softprops/action-gh-release@v2
       with:
-          files: |
-            lenv-linux-amd64
-            lenv-linux-arm64
-            lenv-windows-amd64.exe
-            LICENSE
+        files: |
+          lenv-linux-amd64
+          lenv-linux-arm64
+          lenv-windows-amd64.exe
+          LICENSE
+        body: ${{ steps.changelog.outputs.changelog }}
