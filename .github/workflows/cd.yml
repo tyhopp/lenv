@@ -32,7 +32,9 @@ jobs:
       id: changelog
       run: |
         changelog=$(./changelog.sh)
-        echo "::set-output name=changelog::$changelog"
+        echo "changelog<<EOF" >> $GITHUB_ENV
+        echo "$changelog" >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
 
     - name: release
       uses: softprops/action-gh-release@v2
@@ -49,4 +51,4 @@ jobs:
           lenv-openbsd-amd64
           lenv-openbsd-arm64
           LICENSE
-        body: ${{ steps.changelog.outputs.changelog }}
+        body: ${{ env.changelog }}
