@@ -15,8 +15,8 @@ Useful for monorepos that use a single `.env` file as a source of truth for many
 
 To install the latest linux amd64 release from GitHub:
 
-```sh
-curl -L -o lenv https://github.com/tyhopp/lenv/releases/latest/download/lenv-linux-amd64
+```
+curl -L https://github.com/tyhopp/lenv/releases/latest/download/lenv-linux-amd64
 ```
 
 See [Releases](https://github.com/tyhopp/lenv/releases) for all available binaries and versions.
@@ -45,4 +45,12 @@ Subcommands:
   check   - Check status of symlinks between source env file and destinations
   link    - Symlink source env file to destinations
   unlink  - Remove symlinks from destinations
+```
+
+### WASI binary execution
+
+The [WASI](https://wasi.dev/) binary can be executed with the [Wasmtime](https://wasmtime.dev/) WebAssembly runtime with this command structure:
+
+```
+wasmtime --wasi cli --dir /absolute/path/to/project lenv-wasip1.wasm
 ```
