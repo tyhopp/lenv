@@ -13,7 +13,7 @@ Useful for monorepos that use a single `.env` file as a source of truth for many
 
 ### Via precompiled binaries
 
-To install and make executable the latest release from GitHub:
+To install the latest linux amd64 release from GitHub:
 
 ```sh
 curl -L -o lenv https://github.com/tyhopp/lenv/releases/latest/download/lenv-linux-amd64
