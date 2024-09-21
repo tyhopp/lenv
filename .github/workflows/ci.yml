@@ -25,6 +25,8 @@ jobs:
 
     - name: set-up-go
       uses: actions/setup-go@v5
+      with:
+        go-version: 'stable'
 
     - name: install-deps
       run: make deps
