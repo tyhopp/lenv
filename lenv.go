@@ -83,7 +83,11 @@ func Check(source string, destinations []string) error {
 			if err != nil {
 				panic(err)
 			}
-			if link == source {
+			relSource, err := filepath.Rel(filepath.Dir(destination), source)
+			if err != nil {
+				return fmt.Errorf("lenv: failed to get relative path from %s to %s", destination, source)
+			}
+			if link == relSource {
 				fmt.Printf("lenv: symlink links %s to %s\n", source, destination)
 			} else {
 				return fmt.Errorf("lenv: symlink %s does not link to %s, it should be removed", destination, source)
@@ -119,8 +123,11 @@ func Link(source string, destinations []string) error {
 				return fmt.Errorf("lenv: physical file at %s should be removed first", destination)
 			}
 		}
-
-		err = os.Symlink(source, destination)
+		relSource, err := filepath.Rel(filepath.Dir(destination), source)
+		if err != nil {
+			return fmt.Errorf("lenv: failed to get relative path from %s to %s", destination, source)
+		}
+		err = os.Symlink(relSource, destination)
 		if err != nil {
 			return fmt.Errorf("lenv: failed to symlink %s to %s", source, destination)
 		}
