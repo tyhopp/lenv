@@ -14,6 +14,6 @@ build: deps
 	GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w" -trimpath -o lenv-darwin-amd64 ./cmd/lenv/main.go
 	GOOS=darwin GOARCH=arm64 go build -ldflags="-s -w" -trimpath -o lenv-darwin-arm64 ./cmd/lenv/main.go
 	GOOS=freebsd GOARCH=amd64 go build -ldflags="-s -w" -trimpath -o lenv-freebsd-amd64 ./cmd/lenv/main.go
-	GOOS=freebsd GOARCH=amd64 go build -ldflags="-s -w" -trimpath -o lenv-freebsd-arm64 ./cmd/lenv/main.go
+	GOOS=freebsd GOARCH=arm64 go build -ldflags="-s -w" -trimpath -o lenv-freebsd-arm64 ./cmd/lenv/main.go
 	GOOS=openbsd GOARCH=amd64 go build -ldflags="-s -w" -trimpath -o lenv-openbsd-amd64 ./cmd/lenv/main.go
-	GOOS=openbsd GOARCH=amd64 go build -ldflags="-s -w" -trimpath -o lenv-openbsd-arm64 ./cmd/lenv/main.go
+	GOOS=openbsd GOARCH=arm64 go build -ldflags="-s -w" -trimpath -o lenv-openbsd-arm64 ./cmd/lenv/main.go
