@@ -6,20 +6,11 @@ Useful for monorepos that use a single `.env` file as a source of truth for many
 
 ## Installation
 
-### Via Go tooling
+Download precompiled binaries from [Releases](https://github.com/tyhopp/lenv/releases).
 
-- `go install github.com/tyhopp/lenv/cmd/lenv@latest` to install the command line executable
-- `go get github.com/tyhopp/lenv` to install as a dependency in your Go project
+Ports for various programming languages are available in [lenv-ports](https://github.com/tyhopp/lenv-ports):
 
-### Via precompiled binaries
-
-To install the latest linux amd64 release from GitHub:
-
-```
-curl -L https://github.com/tyhopp/lenv/releases/latest/download/lenv-linux-amd64
-```
-
-See [Releases](https://github.com/tyhopp/lenv/releases) for all available binaries and versions.
+- [JavaScript](https://www.npmjs.com/package/lenv-js) (Node.js, ESM)
 
 ## Usage
 
@@ -33,23 +24,13 @@ project/a/.env
 project/b/.env
 ```
 
-3. Follow these usage instructions:
-```
-Usage: lenv [options] <subcommand>
-Options:
-  -env string
-        name of the environment file (default ".env")
-  -help
-        display help information
-Subcommands:
-  check   - Check status of symlinks between source env file and destinations
-  link    - Symlink source env file to destinations
-  unlink  - Remove symlinks from destinations
-```
+3. Execute `lenv link` to create symlinks
+
+Use the `-help` flag to see all usage instructions.
 
 ### WASI binary execution
 
-The [WASI](https://wasi.dev/) binary can be executed with the [Wasmtime](https://wasmtime.dev/) WebAssembly runtime with this command structure:
+The [WebAssembly System Interface (WASI)](https://wasi.dev/) binary can be executed with the [Wasmtime](https://wasmtime.dev/) runtime with this command structure:
 
 ```
 wasmtime --wasi cli --dir /absolute/path/to/project lenv-wasip1.wasm
