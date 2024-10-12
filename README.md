@@ -10,7 +10,8 @@ Download precompiled binaries from [Releases](https://github.com/tyhopp/lenv/rel
 
 Ports for various programming languages are available in [lenv-ports](https://github.com/tyhopp/lenv-ports):
 
-- [JavaScript](https://www.npmjs.com/package/lenv-js) (Node.js, ESM)
+- [JavaScript](https://www.npmjs.com/package/lenv-js)
+- [Python](https://pypi.org/project/lenv-py)
 
 ## Usage
 
