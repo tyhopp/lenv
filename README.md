@@ -10,8 +10,9 @@ Download precompiled binaries from [Releases](https://github.com/tyhopp/lenv/rel
 
 Ports for various programming languages are available in [lenv-ports](https://github.com/tyhopp/lenv-ports):
 
-- [JavaScript](https://www.npmjs.com/package/lenv-js)
-- [Python](https://pypi.org/project/lenv-py)
+- [JavaScript](https://github.com/tyhopp/lenv-ports/tree/main/js/README.md), published to [npm](https://www.npmjs.com/package/lenv-js)
+- [Python](https://github.com/tyhopp/lenv-ports/tree/main/py/README.md), published to [PyPI](https://pypi.org/project/lenv-py)
+- [Rust](https://github.com/tyhopp/lenv-ports/tree/main/rs/README.md), TBD
 
 ## Usage
 
@@ -31,7 +32,7 @@ Use the `-help` flag to see all usage instructions.
 
 ### WASI binary execution
 
-The [WebAssembly System Interface (WASI)](https://wasi.dev/) binary can be executed with the [Wasmtime](https://wasmtime.dev/) runtime with this command structure:
+The [WebAssembly System Interface (WASI)](https://wasi.dev/) binary can be executed with the [Wasmtime](https://wasmtime.dev/) runtime CLI with this command structure:
 
 ```
 wasmtime --wasi cli --dir /absolute/path/to/project lenv-wasip1.wasm
