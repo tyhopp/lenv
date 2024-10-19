@@ -12,7 +12,7 @@ Ports for various programming languages are available in [lenv-ports](https://gi
 
 - [JavaScript](https://github.com/tyhopp/lenv-ports/tree/main/js/README.md), published to [npm](https://www.npmjs.com/package/lenv-js)
 - [Python](https://github.com/tyhopp/lenv-ports/tree/main/py/README.md), published to [PyPI](https://pypi.org/project/lenv-py)
-- [Rust](https://github.com/tyhopp/lenv-ports/tree/main/rs/README.md), TBD
+- [Rust](https://github.com/tyhopp/lenv-ports/tree/main/rs/README.md), published to [crates.io](https://crates.io/crates/lenv-rs)
 
 ## Usage
 
